@@ -5,6 +5,7 @@ import controllers
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import sys
 
 '''
 def process_channels(image, sigma, is_low_pass, is_gray_scale):
@@ -30,71 +31,65 @@ def process_image(image, sigma, is_low_pass):
 '''
     
 if __name__ == '__main__':
-    '''
     parser = argparse.ArgumentParser()
-    
     parser.add_argument("-l",
                         "--low_freq_image",
                         help='Image that will be processed in low frequencies',
                         required=True)
-    parser.add_argument("-hf",
+    parser.add_argument("-hi",
                         "--high_freq_image",
                         help='Image that will be processed in high frequencies',
                         required=True)
-    parser.add_argument("-s",
-                        "--sigma",
-                        help='Sigma in kernel',
+    parser.add_argument("-g",
+                        "--gray_scale",
+                        help='Is image grayscale? T/F',
+                        required=True)
+    parser.add_argument("-k_1",
+                        "--kernel_1_size",
+                        help='Kernel 1 size',
+                        required=True)
+    parser.add_argument("-k_2",
+                        "--kernel_2_size",
+                        help='Kernel 2 size',
+                        required=True)
+    parser.add_argument("-s_1",
+                        "--sigma_1",
+                        help='Sigma',
+                        required=True)
+    parser.add_argument("-s_2",
+                        "--sigma_2",
+                        help='Sigma 2',
                         required=True)
     parser.add_argument("-p",
-                        "--save_path",
-                        help='Path to save the result',
+                        "--path",
+                        help='Results save path',
                         required=False)
-    parser.add_argument("-g",
-                        "--is_greyscale",
-                        help='Are images grayscale or not',
-                        required=True)
     
     args = parser.parse_args()
-    image_low_path = args.low_freq_image
-    image_high_path = args.high_freq_image
-    sigma = int(args.sigma)
-    save_path = args.save_path
-    is_grayscale = args.is_greyscale == 'True'
-    image_low = controllers.open_image(image_low_path, is_grayscale)
-    image_high = controllers.open_image(image_high_path, is_grayscale)
-    '''
     
-    image_low = controllers.open_image('data/dog.bmp', False)
-    image_high = controllers.open_image('data/cat.bmp', False)
-    kernel = controllers.GaussianKernel(11, 7)
-    '''
-    kernel_2 = cv2.getGaussianKernel(5, 3)
-    kernel_2 = kernel_2 * kernel_2.T
-    '''
-    image_low = controllers.filtering(image_low, kernel)
-    image_high -= controllers.filtering(image_high, kernel)
-    plt.imshow(image_low + image_high)
-    plt.show()
-    cv2.imwrite('tmp.jpg', (image_low + image_high)/2)
+    low_image_path = args.low_freq_image
+    high_image_path = args.high_freq_image
+    is_grayscale = True if args.gray_scale == 'T' or args.gray_scale == 'True' else False
+    kernel_1_size = int(args.kernel_1_size)
+    kernel_2_size = int(args.kernel_2_size)
+    sigma_1 = int(args.sigma_1)
+    sigma_2 = int(args.sigma_2)
+    path = args.path
+    
+    if kernel_1_size % 2 == 0 or kernel_2_size % 2 == 0:
+        print('Kernel size has to be odd!')
+        sys.exit()
     
     
-    '''
-    tmp = image_low[:, :, 0]
-    tmp_img = image[:, :, 0]
-    output = tmp_img.astype('uint8')
-    output_image = image_low.astype('uint8')
-    plt.imshow(output_image)
-    plt.show()
-    '''
-    '''
-    image_low = process_channels(image_low, sigma, True, is_grayscale).astype('float32')
-    image_high = process_channels(image_high, sigma, False, is_grayscale).astype('float32')
-    image = image_low + image_high
-    #image = cast_values(image)
-    image = image.astype('uint8')
-    if save_path is None:
-        save_path = ''
-        
-    save_path = os.path.join(save_path, 'result_task_2.jpeg')
-    cv2.imwrite(save_path, image)
-    '''
+    image_low = controllers.open_image(low_image_path, is_grayscale).astype('float32')
+    image_high = controllers.open_image(high_image_path, is_grayscale).astype('float32')
+
+    kernel_1 = controllers.GaussianKernel(kernel_1_size, sigma_1)
+    kernel_2 = controllers.GaussianKernel(kernel_2_size, sigma_2)
+    image_low = controllers.filtering(image_low, kernel_1)
+    image_high -= controllers.filtering(image_high, kernel_2)
+    output_image = controllers.rescale(image_low + image_high)
+
+    cv2.imwrite('second_task_result.jpg', output_image.astype('uint8'))
+    
+    #comparizon
