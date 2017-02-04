@@ -39,6 +39,13 @@ def filtering(image, kernel):
     return np.round(image_real) + 1j * np.round(image_imag)
 '''
 
+def rescale(image):
+    image = image.astype('float32')
+    current_min = np.min(image)
+    current_max = np.max(image)
+    image = (image - current_min)/(current_max - current_min) * 255
+    return image
+
 def GaussianKernel(size, sigma):
     centre = size // 2 + 1
     

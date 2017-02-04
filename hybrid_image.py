@@ -1,18 +1,9 @@
 #!/usr/bin/env python3
 import argparse
-from controllers import open_image
+from controllers import open_image, rescale
 import cv2
-import numpy as np
 import os
 import sys
-import matplotlib.pyplot as plt
-
-def rescale(image):
-    image = image.astype('float32')
-    current_min = np.min(image)
-    current_max = np.max(image)
-    image = (image - current_min)/(current_max - current_min) * 255
-    return image
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
