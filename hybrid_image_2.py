@@ -2,33 +2,22 @@
 import argparse
 import cv2
 import controllers
-import matplotlib.pyplot as plt
-import numpy as np
 import os
+import numpy as np
 import sys
 
-'''
-def process_channels(image, sigma, is_low_pass, is_gray_scale):
-    if is_gray_scale:
-        image = process_image(image, sigma, is_low_pass)
-    else:
-        for channel in range(3):
-            image[:, :, channel] = process_image(image[:, :, channel], sigma, is_low_pass)
-        
-    return image
-        
+def inbuilt_filtering(image_low, image_high, kernel_1_size, kernel_2_size, sigma_1, sigma_2):
+    kernel_1 = (kernel_1_size, kernel_1_size)
+    kernel_2 = (kernel_2_size, kernel_2_size)
+    image_low = controllers.open_image(low_image_path, is_grayscale)
+    image_high = controllers.open_image(high_image_path, is_grayscale)
     
-def process_image(image, sigma, is_low_pass):
-    n, m = image.shape
-    image_fft = controllers.fourier_transform(image)
-    kernel = controllers.GaussianKernel(n, m, sigma)
-    image_filtered = controllers.filtering(image_fft, kernel)
-    if not is_low_pass:
-        image_filtered = image_fft - image_filtered
-    image = controllers.revert_fourier_transform(image_filtered)
-    image = np.real(image)#.astype('int')
-    return image
-'''
+    image_low = cv2.GaussianBlur(image_low, kernel_1, 0).astype('float32')
+    image_high = image_high.astype('float32') - cv2.GaussianBlur(image_high, kernel_2, 0).astype('float32')
+
+    output_image = image_low+image_high
+    
+    return output_image
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -90,6 +79,13 @@ if __name__ == '__main__':
     image_high -= controllers.filtering(image_high, kernel_2)
     output_image = controllers.rescale(image_low + image_high)
 
-    cv2.imwrite('second_task_result.jpg', output_image.astype('uint8'))
+    path = '' if path == None else path
+    
+    cv2.imwrite(os.path.join(path, 'second_task_result.jpg'), controllers.rescale(output_image).astype('uint8'))
     
     #comparizon
+    inbuilt_filtered = inbuilt_filtering(low_image_path, high_image_path, kernel_1_size, kernel_2_size, sigma_1, sigma_2)
+    comparison = np.sqrt((output_image - inbuilt_filtered) ** 2)
+    comparison = controllers.rescale(comparison).astype('uint8')
+    cv2.imwrite(os.path.join(path, 'comparison.jpg'), comparison)
+    
