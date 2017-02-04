@@ -3,17 +3,7 @@ import cv2
 import numpy as np
 from math import exp
 from numpy.fft import fft2, ifft2, fftshift, ifftshift
-'''
-def makeGaussianFilter(numRows, numCols, sigma, highPass=True):
-   centerI = int(numRows/2) + 1 if numRows % 2 == 1 else int(numRows/2)
-   centerJ = int(numCols/2) + 1 if numCols % 2 == 1 else int(numCols/2)
- 
-   def gaussian(i,j):
-      coefficient = exp(-1.0 * ((i - centerI)**2 + (j - centerJ)**2) / (2 * sigma**2))
-      return 1 - coefficient if highPass else coefficient
- 
-   return np.array([[gaussian(i,j) for j in range(numCols)] for i in range(numRows)])
-'''
+
 def GaussianKernel(sizex, sizey, sigma):
     if sizex % 2 == 1:
         centre_x = int(sizex / 2 + 1)
