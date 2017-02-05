@@ -63,3 +63,5 @@ def sobel_filtering(image):
     vertical_edges = filtering(image, kernel_vertical).astype('float32')
     return horizontal_edges + vertical_edges
     
+
+    
