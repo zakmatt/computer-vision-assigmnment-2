@@ -63,8 +63,24 @@ def sobel_filtering(image):
     vertical_edges = filtering(image, kernel_vertical).astype('float32')
     return horizontal_edges + vertical_edges
     
+# DoG - Difference of Gaussians
 def d_o_g(k_size, sigma_1, sigma_2):
     kernel_1 = GaussianKernel(k_size, sigma_1)
     kernel_2 = GaussianKernel(k_size, sigma_2)
     return kernel_1 - kernel_2
+
+# Filtering with an approximated kernel
+def l_o_g_filtering(image):
+    kernel = np.array([[0, 1, 0],
+                       [1, -4, 1],
+                       [0, 1, 0]])
+    filtered_image = filtering(image, kernel)
+    return filtered_image
     
+# LoG created based on another approximation
+# We subtract delta function from the gaussian kernel
+def l_o_g_kernel(size, sigma):
+    centre = size // 2 + 1
+    kernel = GaussianKernel(size, sigma)
+    kernel[centre, centre] -= 1
+    return kernel
