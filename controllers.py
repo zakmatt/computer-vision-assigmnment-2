@@ -44,14 +44,22 @@ def filtering(image, kernel):
             new_image = np.zeros(image_shape)
             for channel in range(3):
                 new_image[:, :, channel] = filter_channel(image[:, :, channel], kernel)
-        else:
-            new_image = filter_channel(image, kernel)
-    return new_image.astype('uint8')
+    else:
+        new_image = filter_channel(image, kernel)
+    return new_image
 
 def open_image(file_path, is_grayscale):
     return cv2.imread(file_path, 0) if is_grayscale else cv2.imread(file_path)
     
     
-    
-# high pass filter impulse filter - gaussian filter
+def sobel_filtering(image):
+    kernel_horizontal = np.array([[-1, -2, -1],
+                                  [0, 0, 0],
+                                  [1, 2, 1]])
+    kernel_vertical = np.array([[-1, 0, 1],
+                                [-2, 0, 2],
+                                [-1, 0, 1]])
+    horizontal_edges = filtering(image, kernel_horizontal).astype('float32')
+    vertical_edges = filtering(image, kernel_vertical).astype('float32')
+    return horizontal_edges + vertical_edges
     
