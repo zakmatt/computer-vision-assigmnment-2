@@ -63,5 +63,8 @@ def sobel_filtering(image):
     vertical_edges = filtering(image, kernel_vertical).astype('float32')
     return horizontal_edges + vertical_edges
     
-
+def d_o_g(k_size, sigma_1, sigma_2):
+    kernel_1 = GaussianKernel(k_size, sigma_1)
+    kernel_2 = GaussianKernel(k_size, sigma_2)
+    return kernel_1 - kernel_2
     
